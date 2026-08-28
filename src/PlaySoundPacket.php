@@ -59,7 +59,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		int $loopCount,
 		bool $bypassListenerRangeCheck,
 		?int $serverSoundHandle,
-		?float $playbackPositionSeconds
+		?float $playbackPositionSeconds,
 	) : self{
 		$result = new self;
 		$result->soundName = $soundName;
@@ -95,7 +95,9 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		LE::writeFloat($out, $this->volume);
 		LE::writeFloat($out, $this->pitch);
 		VarInt::writeSignedInt($out, $this->loopCount);
+		CommonTypes::putBool($out, $this->bypassListenerRangeCheck);
 		CommonTypes::writeOptional($out, $this->serverSoundHandle, LE::writeUnsignedLong(...));
+		CommonTypes::writeOptional($out, $this->playbackPositionSeconds, LE::writeFloat(...));
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

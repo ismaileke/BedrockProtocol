@@ -25,7 +25,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-enum NoiseAlignmentType : int {
+enum NoiseAlignmentType : int{
 	use PacketIntEnumTrait;
 	case MIN_LOCAL_TRANSITION_END = 0;
 }

@@ -32,6 +32,9 @@ class SkinAnimation{
 	public const TYPE_BODY_32 = 2;
 	public const TYPE_BODY_128 = 3;
 
+	/** @deprecated Use {@link SkinAnimation::TYPE_HEAD} instead */
+	public const TYPE_FACE = self::TYPE_HEAD;
+
 	public const EXPRESSION_LINEAR = 0; //???
 	public const EXPRESSION_BLINKING = 1;
 

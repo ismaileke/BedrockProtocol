@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol\types\furnace;
 
 use pocketmine\network\mcpe\protocol\types\PacketIntEnumTrait;
 
-enum FurnaceLayout : int {
+enum FurnaceLayout : int{
 	use PacketIntEnumTrait;
 
 	case NONE = 0;

@@ -38,7 +38,7 @@ final class StringArrayPackSetting extends PackSetting{
 	private array $value;
 
 	/**
-	 * @param string[]  $value
+	 * @param string[] $value
 	 */
 	public function __construct(string $name, array $value){
 		parent::__construct($name);
@@ -58,7 +58,7 @@ final class StringArrayPackSetting extends PackSetting{
 
 	public function write(ByteBufferWriter $out) : void{
 		VarInt::writeUnsignedInt($out, count($this->value));
-		foreach($this->value as $str) {
+		foreach($this->value as $str){
 			CommonTypes::putString($out, $str);
 		}
 	}
@@ -68,7 +68,7 @@ final class StringArrayPackSetting extends PackSetting{
 
 		$array = [];
 		for($i = 0; $i < $arrayCount; ++$i){
-			$array[$i] = CommonTypes::getString($in);
+			$array[] = CommonTypes::getString($in);
 		}
 		return new self($name, $array);
 	}

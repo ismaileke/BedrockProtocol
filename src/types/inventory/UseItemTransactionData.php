@@ -28,16 +28,13 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 use pmmp\encoding\Byte;
 use pmmp\encoding\ByteBufferReader;
 use pmmp\encoding\ByteBufferWriter;
-use pmmp\encoding\DataDecodeException;
 use pmmp\encoding\VarInt;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\serializer\CommonTypes;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\GetTypeIdFromConstTrait;
 use pocketmine\network\mcpe\protocol\types\HandSlot;
-use function count;
 
 class UseItemTransactionData extends TransactionData{
 	use GetTypeIdFromConstTrait;
@@ -80,6 +77,10 @@ class UseItemTransactionData extends TransactionData{
 		return $this->hotbarSlot;
 	}
 
+	public function getHandSlot() : HandSlot{
+		return $this->handSlot;
+	}
+
 	public function getItemInHand() : ItemStackWrapper{
 		return $this->itemInHand;
 	}
@@ -99,36 +100,6 @@ class UseItemTransactionData extends TransactionData{
 	public function getClientInteractPrediction() : PredictedResult{ return $this->clientInteractPrediction; }
 
 	public function getClientCooldownState() : int{ return $this->clientCooldownState; }
-
-	/**
-	 * PlayerAuthInputPacket frames this transaction differently from InventoryTransactionPacket: the action list is
-	 * optional, but the fields after it are always present.
-	 *
-	 * @throws DataDecodeException
-	 * @throws PacketDecodeException
-	 */
-	public function decodeFromItemInteraction(ByteBufferReader $in) : void{
-		$hasActions = CommonTypes::getBool($in);
-		$hasTransactionData = CommonTypes::getBool($in);
-
-		if($hasActions && $hasTransactionData){
-			$actionCount = VarInt::readUnsignedInt($in);
-			for($i = 0; $i < $actionCount; ++$i){
-				$this->actions[] = (new NetworkInventoryAction())->read($in);
-			}
-		}
-		$this->decodeData($in);
-	}
-
-	public function encodeForItemInteraction(ByteBufferWriter $out) : void{
-		CommonTypes::putBool($out, true);
-		CommonTypes::putBool($out, true);
-		VarInt::writeUnsignedInt($out, count($this->actions));
-		foreach($this->actions as $action){
-			$action->write($out);
-		}
-		$this->encodeData($out);
-	}
 
 	protected function decodeData(ByteBufferReader $in) : void{
 		$this->actionType = VarInt::readUnsignedInt($in);
@@ -169,6 +140,7 @@ class UseItemTransactionData extends TransactionData{
 		BlockPosition $blockPosition,
 		int $face,
 		int $hotbarSlot,
+		HandSlot $handSlot,
 		ItemStackWrapper $itemInHand,
 		Vector3 $playerPosition,
 		Vector3 $clickPosition,
@@ -182,6 +154,7 @@ class UseItemTransactionData extends TransactionData{
 		$result->blockPosition = $blockPosition;
 		$result->face = $face;
 		$result->hotbarSlot = $hotbarSlot;
+		$result->handSlot = $handSlot;
 		$result->itemInHand = $itemInHand;
 		$result->playerPosition = $playerPosition;
 		$result->clickPosition = $clickPosition;
@@ -194,8 +167,8 @@ class UseItemTransactionData extends TransactionData{
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $actionType, TriggerType $triggerType, BlockPosition $blockPosition, int $face, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPosition, Vector3 $clickPosition, int $blockRuntimeId, PredictedResult $clientInteractPrediction, int $clientCooldownState) : self{
-		$result = self::initSelf($actionType, $triggerType, $blockPosition, $face, $hotbarSlot, $itemInHand, $playerPosition, $clickPosition, $blockRuntimeId, $clientInteractPrediction, $clientCooldownState);
+	public static function new(array $actions, int $actionType, TriggerType $triggerType, BlockPosition $blockPosition, int $face, int $hotbarSlot, HandSlot $handSlot, ItemStackWrapper $itemInHand, Vector3 $playerPosition, Vector3 $clickPosition, int $blockRuntimeId, PredictedResult $clientInteractPrediction, int $clientCooldownState) : self{
+		$result = self::initSelf($actionType, $triggerType, $blockPosition, $face, $hotbarSlot, $handSlot, $itemInHand, $playerPosition, $clickPosition, $blockRuntimeId, $clientInteractPrediction, $clientCooldownState);
 		$result->actions = $actions;
 		return $result;
 	}
