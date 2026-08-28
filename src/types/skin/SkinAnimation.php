@@ -30,7 +30,7 @@ class SkinAnimation{
 	public const TYPE_NONE = 0;
 	public const TYPE_HEAD = 1;
 	public const TYPE_BODY_32 = 2;
-	public const TYPE_BODY_64 = 3;
+	public const TYPE_BODY_128 = 3;
 
 	public const EXPRESSION_LINEAR = 0; //???
 	public const EXPRESSION_BLINKING = 1;
